@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>برنامج الركبة – الاستشفاء والتقوية</title>
+    <!-- Google Fonts: Inter & Tajawal for Arabic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-deep: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --accent: #10b981;
+            --accent-glow: rgba(16, 185, 129, 0.2);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', 'Tajawal', system-ui, -apple-system, sans-serif;
+            background: radial-gradient(circle at top right, #1e293b, #0f172a);
+            color: var(--text-main);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        header {
+            padding: 40px 20px;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(to left, #34d399, #10b981);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            margin: 10px 0 0;
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding: 4px;
+            scrollbar-width: none;
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 14px 20px;
+            border-radius: 100px;
+            border: 1px solid var(--glass-border);
+            background: var(--bg-card);
+            color: var(--text-muted);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background: var(--accent);
+            color: #064e3b;
+            border-color: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: rgba(51, 65, 85, 0.8);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .section {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .section.active {
+            display: grid;
+            animation: fadeIn 0.5s forwards cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-img-container {
+            width: 100%;
+            aspect-ratio: 4/3;
+            overflow: hidden;
+            background: #1e293b;
+            position: relative;
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card .body {
+            padding: 20px;
+        }
+
+        .card h3 {
+            margin: 0 0 8px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .card p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            backdrop-filter: blur(4px);
+            border: 1px solid var(--glass-border);
+        }
+
+        .note {
+            grid-column: 1 / -1;
+            background: rgba(16, 185, 129, 0.1);
+            border-right: 4px solid var(--accent);
+            border-radius: 12px;
+            padding: 20px;
+            color: var(--text-main);
+            font-size: 15px;
+            margin-top: 20px;
+        }
+
+        /* Day sub-tabs for gym section */
+        .day-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            padding: 4px;
+            scrollbar-width: none;
+            grid-column: 1 / -1;
+        }
+
+        .day-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .day-btn {
+            padding: 10px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            background: rgba(30, 41, 59, 0.5);
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            min-width: fit-content;
+        }
+
+        .day-btn.active {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border-color: transparent;
+        }
+
+        .day-btn:hover:not(.active) {
+            background: rgba(51, 65, 85, 0.8);
+        }
+
+        .day-content {
+            display: none;
+            grid-column: 1 / -1;
+        }
+
+        .day-content.active {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .day-header {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1));
+            border-radius: 16px;
+            margin-bottom: 8px;
+        }
+
+        .day-header h2 {
+            margin: 0 0 8px;
+            font-size: 22px;
+            color: var(--accent);
+        }
+
+        .day-header p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .exercise-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--glass-border);
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .sets-reps {
+            background: rgba(16, 185, 129, 0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            header h1 {
+                font-size: 22px;
+            }
+
+            .section {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-btn {
+                padding: 12px 10px;
+                font-size: 13px;
+            }
+
+            .day-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .day-content.active {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>برنامج الركبة – الاستشفاء والتقوية 🦵⚽</h1>
+        <p>دليل مرئي شامل للإحماء، التعافي، والتمارين اليومية</p>
+    </header>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="show(event, 'pre')">قبل اللعب</button>
+            <button class="tab-btn" onclick="show(event, 'post')">بعد اللعب</button>
+            <button class="tab-btn" onclick="show(event, 'daily')">تمارين يومية</button>
+            <button class="tab-btn" onclick="show(event, 'fitness')">تمارين اللياقة</button>
+            <button class="tab-btn" onclick="show(event, 'gym')">برنامج الجيم</button>
+        </div>
+
+        <!-- ================= قبل اللعب ================= -->
+        <div id="pre" class="section active">
+            <div class="card">
+                <div class="badge">إحماء</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/4/9/9/0/4990.gif"
+                        alt="Knee Circles">
+                </div>
+                <div class="body">
+                    <h3>Knee Circles</h3>
+                    <p>10 دورات لكل اتجاه لتزييت المفصل</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">إحماء</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/5/3/8/8/15388.gif"
+                        alt="Walking Lunge">
+                </div>
+                <div class="body">
+                    <h3>Walking Lunge</h3>
+                    <p>10 خطوات لكل رجل لإحماء العضلات</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">إحماء</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/5/6/7/9/15679.gif"
+                        alt="Ankle Circles">
+                </div>
+                <div class="body">
+                    <h3>Ankle Circles</h3>
+                    <p>تحريك الكاحل 30 ثانية لكل قدم</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">إحماء</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/0/7/5/2/10752.gif"
+                        alt="Leg Swings">
+                </div>
+                <div class="body">
+                    <h3>Leg Swings</h3>
+                    <p>15 تأرجح لكل رجل أمام وخلف</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">تنشيط</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/4/1/5/7/14157.gif"
+                        alt="Glute Bridge">
+                </div>
+                <div class="body">
+                    <h3>Glute Bridge</h3>
+                    <p>15 تكراراً لتنشيط العضلات الخلفية</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">تنشيط</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/7/0/1/4/7014.gif"
+                        alt="Wall Sit">
+                </div>
+                <div class="body">
+                    <h3>Wall Sit</h3>
+                    <p>الثبات لمدة 30 ثانية لتقوية الأوتار</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">تنشيط</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/0/6/3/4/10634.gif"
+                        alt="Lateral Band Walk">
+                </div>
+                <div class="body">
+                    <h3>Lateral Band Walk</h3>
+                    <p>10 خطوات جانبية لكل جهة</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">تنشيط</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/5/4/5/5/15455.gif"
+                        alt="Bodyweight Squat">
+                </div>
+                <div class="body">
+                    <h3>Bodyweight Squat</h3>
+                    <p>15 تكراراً لتنشيط عضلات الفخذ</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">حركة</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/6/8/9/2/16892.gif"
+                        alt="High Knees">
+                </div>
+                <div class="body">
+                    <h3>High Knees</h3>
+                    <p>جري في المكان 30 ثانية</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">حركة</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/5/4/6/1/5461.gif"
+                        alt="Side Skaters">
+                </div>
+                <div class="body">
+                    <h3>Side Skaters</h3>
+                    <p>حركة جانبية سريعة 20 تكراراً</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">حركة</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/5/2/9/5/5295.gif"
+                        alt="Butt Kicks">
+                </div>
+                <div class="body">
+                    <h3>Butt Kicks</h3>
+                    <p>جري مع ركل المؤخرة 30 ثانية</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">ثبات</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/6/9/3/0/16930.gif"
+                        alt="Single Leg Balance">
+                </div>
+                <div class="body">
+                    <h3>Single Leg Balance</h3>
+                    <p>توازن على قدم واحدة 30 ثانية لكل قدم</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= بعد اللعب ================= -->
+        <div id="post" class="section">
+            <div class="card">
+                <div class="badge">استشفاء</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/2/7/8/3/12783.gif"
+                        alt="Hamstring Stretch">
+                </div>
+                <div class="body">
+                    <h3>Standing Hamstring Stretch</h3>
+                    <p>30 ثانية لكل رجل لإطالة الفخذ الخلفي</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">استشفاء</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/2/8/0/9/12809.gif"
+                        alt="Quad Stretch">
+                </div>
+                <div class="body">
+                    <h3>Quadriceps Stretch</h3>
+                    <p>30 ثانية لكل رجل لإطالة الفخذ الأمامي</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">استشفاء</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/2/8/2/0/12820.gif"
+                        alt="Calf Stretch">
+                </div>
+                <div class="body">
+                    <h3>Calf Stretch</h3>
+                    <p>30 ثانية لكل رجل لإطالة السمانة</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">استشفاء</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/2/8/0/6/12806.gif"
+                        alt="Butterfly Stretch">
+                </div>
+                <div class="body">
+                    <h3>Butterfly Stretch</h3>
+                    <p>30 ثانية لإطالة الفخذ الداخلي</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">استشفاء</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/2/3/0/4/9/23049.gif"
+                        alt="Pigeon Pose">
+                </div>
+                <div class="body">
+                    <h3>Pigeon Pose</h3>
+                    <p>30 ثانية لكل جانب لإطالة الورك</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">استشفاء</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/2/7/7/2/12772.gif"
+                        alt="Hip Flexor Stretch">
+                </div>
+                <div class="body">
+                    <h3>Hip Flexor Stretch</h3>
+                    <p>30 ثانية لكل جانب لإطالة الورك الأمامي</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">استشفاء</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/2/6/0/1/2/26012.gif"
+                        alt="Child's Pose">
+                </div>
+                <div class="body">
+                    <h3>Child's Pose</h3>
+                    <p>60 ثانية للاسترخاء الكامل</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">استشفاء</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/2/8/0/7/12807.gif"
+                        alt="Seated Hamstring Stretch">
+                </div>
+                <div class="body">
+                    <h3>Seated Hamstring Stretch</h3>
+                    <p>30 ثانية لكل رجل لإطالة الفخذ</p>
+                </div>
+            </div>
+
+            <div class="note">
+                💡 <b>نصيحة:</b> لا تهمل تمارين الاستشفاء بعد اللعب - فهي تقلل من آلام العضلات وتسرع التعافي.
+            </div>
+        </div>
+
+        <!-- ================= تمارين يومية ================= -->
+        <div id="daily" class="section">
+            <div class="card">
+                <div class="badge">إطالة</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/2/8/0/7/12807.gif"
+                        alt="Hamstring Stretch">
+                </div>
+                <div class="body">
+                    <h3>Seated Hamstring Stretch</h3>
+                    <p>ثبات 30 ثانية × 3 مرات لكل رجل</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">إطالة</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/2/8/2/0/12820.gif"
+                        alt="Calf Stretch">
+                </div>
+                <div class="body">
+                    <h3>Calf Stretch</h3>
+                    <p>ثبات 30 ثانية × 3 مرات لكل رجل</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">إطالة</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/2/7/7/2/12772.gif"
+                        alt="Hip Flexor Stretch">
+                </div>
+                <div class="body">
+                    <h3>Hip Flexor Stretch</h3>
+                    <p>30 ثانية لكل جانب لإطالة الورك</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">إطالة</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/2/3/0/4/9/23049.gif"
+                        alt="Pigeon Stretch">
+                </div>
+                <div class="body">
+                    <h3>Pigeon Stretch</h3>
+                    <p>30 ثانية لكل جانب لإطالة الورك العميق</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">تقوية</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/9/0/2/0/19020.gif"
+                        alt="Straight Leg Raise">
+                </div>
+                <div class="body">
+                    <h3>Straight Leg Raise</h3>
+                    <p>15 تكراراً لكل رجل لتقوية الفخذ</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">تقوية</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/2/1/9/5/8/21958.gif"
+                        alt="Hip Abduction">
+                </div>
+                <div class="body">
+                    <h3>Hip Abduction</h3>
+                    <p>15 تكراراً لكل جانب لتقوية الورك</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">تقوية</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/3/7/7/5/3/37753.gif"
+                        alt="Calf Raises">
+                </div>
+                <div class="body">
+                    <h3>Calf Raises</h3>
+                    <p>20 تكراراً لتقوية عضلة السمانة</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">تقوية</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/5/4/6/1/15461.gif"
+                        alt="Step Ups">
+                </div>
+                <div class="body">
+                    <h3>Step Ups</h3>
+                    <p>12 تكراراً لكل رجل لتقوية الركبة</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">توازن</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/6/9/3/0/16930.gif"
+                        alt="Single Leg Stand">
+                </div>
+                <div class="body">
+                    <h3>Single Leg Stand</h3>
+                    <p>45 ثانية لكل رجل لتحسين التوازن</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">توازن</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/2/4/6/5/4/24654.gif"
+                        alt="Single Leg Deadlift">
+                </div>
+                <div class="body">
+                    <h3>Single Leg Deadlift</h3>
+                    <p>10 تكرارات لكل رجل للتوازن والقوة</p>
+                </div>
+            </div>
+
+            <div class="note">
+                💡 <b>نصيحة:</b> التزم بالتمارين اليومية 4-5 أيام في الأسبوع لضمان ثبات المفصل وتقليل فرص الإصابة.
+            </div>
+        </div>
+
+        <!-- ================= تمارين اللياقة ================= -->
+        <div id="fitness" class="section">
+            <div class="card">
+                <div class="badge">قوة</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/4/5/1/2/14512.gif"
+                        alt="Push Up">
+                </div>
+                <div class="body">
+                    <h3>Push Up</h3>
+                    <p>3 مجموعات × 15 تكراراً لتقوية الصدر والذراعين</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">كارديو</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/5/9/8/5/15985.gif"
+                        alt="Jumping Jack">
+                </div>
+                <div class="body">
+                    <h3>Jumping Jack</h3>
+                    <p>45 ثانية لرفع معدل ضربات القلب</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">كارديو</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/2/0/8/5/1/20851.gif"
+                        alt="Mountain Climber">
+                </div>
+                <div class="body">
+                    <h3>Mountain Climber</h3>
+                    <p>30 ثانية لحرق الدهون وتقوية البطن</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">كامل الجسم</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/3/7/7/6/0/37760.gif"
+                        alt="Burpee">
+                </div>
+                <div class="body">
+                    <h3>Burpee</h3>
+                    <p>10 تكرارات لتمرين كامل الجسم</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">ثبات</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/9/0/3/8/9038.gif"
+                        alt="Plank">
+                </div>
+                <div class="body">
+                    <h3>Front Plank</h3>
+                    <p>45 ثانية لتقوية عضلات الجذع</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">بطن</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/2/7/6/6/3/27663.gif"
+                        alt="Bicycle Crunch">
+                </div>
+                <div class="body">
+                    <h3>Bicycle Crunch</h3>
+                    <p>20 تكراراً لكل جانب لنحت البطن</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">بطن</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/7/5/4/1/17541.gif"
+                        alt="Russian Twist">
+                </div>
+                <div class="body">
+                    <h3>Russian Twist</h3>
+                    <p>20 تكراراً لتقوية عضلات الجانبين</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">بطن</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/5/2/6/4/15264.gif"
+                        alt="Crunch Leg Raise">
+                </div>
+                <div class="body">
+                    <h3>Crunch Leg Raise</h3>
+                    <p>15 تكراراً لتقوية البطن السفلي</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">قوة</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/2/6/3/1/2/26312.gif"
+                        alt="Push Up to Side Plank">
+                </div>
+                <div class="body">
+                    <h3>Push Up to Side Plank</h3>
+                    <p>10 تكرارات لكل جانب</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">كارديو</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/6/7/1/3/6713.gif"
+                        alt="Plank Jack">
+                </div>
+                <div class="body">
+                    <h3>Plank Jack</h3>
+                    <p>30 ثانية لتقوية الجذع مع الكارديو</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">أرجل</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/5/4/5/5/15455.gif"
+                        alt="Squat">
+                </div>
+                <div class="body">
+                    <h3>Bodyweight Squat</h3>
+                    <p>3 مجموعات × 20 تكراراً لتقوية الأرجل</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="badge">ثبات</div>
+                <div class="card-img-container">
+                    <img src="https://gymvisual.com/img/p/1/2/3/0/6/12306.gif"
+                        alt="Dynamic Plank">
+                </div>
+                <div class="body">
+                    <h3>Dynamic Plank</h3>
+                    <p>10 تكرارات للتنقل بين البلانك</p>
+                </div>
+            </div>
+
+            <div class="note">
+                💡 <b>نصيحة:</b> قم بأداء هذه التمارين 3 مرات أسبوعياً مع راحة يوم بين كل جلسة للحصول على أفضل النتائج.
+            </div>
+        </div>
+
+        <!-- ================= برنامج الجيم ================= -->
+        <div id="gym" class="section">
+            <!-- Day Navigation -->
+            <div class="day-tabs">
+                <button class="day-btn active" onclick="showDay(event, 'day1')">السبت - صدر</button>
+                <button class="day-btn" onclick="showDay(event, 'day2')">الأحد - ظهر</button>
+                <button class="day-btn" onclick="showDay(event, 'day3')">الاثنين - أرجل</button>
+                <button class="day-btn" onclick="showDay(event, 'day4')">الثلاثاء - أكتاف</button>
+                <button class="day-btn" onclick="showDay(event, 'day5')">الأربعاء - ذراع</button>
+                <button class="day-btn" onclick="showDay(event, 'day6')">الخميس - كارديو</button>
+                <button class="day-btn" onclick="showDay(event, 'day7')">الجمعة - راحة</button>
+            </div>
+
+            <!-- ====== Day 1: Chest + Triceps ====== -->
+            <div id="day1" class="day-content active">
+                <div class="day-header">
+                    <h2>💪 يوم الصدر والترايسبس</h2>
+                    <p>تمارين لبناء عضلات الصدر والذراع الخلفية</p>
+                </div>
+
+                <div class="card">
+                    <div class="badge">صدر</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/4/4/8/0/14480.gif" alt="Dumbbell Bench Press">
+                    </div>
+                    <div class="body">
+                        <h3>Dumbbell Bench Press</h3>
+                        <p>تمرين أساسي لبناء الصدر</p>
+                        <div class="exercise-info">
+                            <span>العضلة: صدر</span>
+                            <span class="sets-reps">4×12</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">صدر</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/4/4/8/8/14488.gif" alt="Incline Dumbbell Fly">
+                    </div>
+                    <div class="body">
+                        <h3>Incline Dumbbell Fly</h3>
+                        <p>لاستهداف الجزء العلوي من الصدر</p>
+                        <div class="exercise-info">
+                            <span>العضلة: صدر علوي</span>
+                            <span class="sets-reps">3×15</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">صدر</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/6/5/3/7/6537.gif" alt="Cable Crossover">
+                    </div>
+                    <div class="body">
+                        <h3>Cable Crossover</h3>
+                        <p>لنحت وتحديد عضلة الصدر</p>
+                        <div class="exercise-info">
+                            <span>العضلة: صدر</span>
+                            <span class="sets-reps">3×15</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">صدر</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/4/9/8/4/4984.gif" alt="Chest Dip">
+                    </div>
+                    <div class="body">
+                        <h3>Chest Dip</h3>
+                        <p>تمرين مركب للصدر السفلي</p>
+                        <div class="exercise-info">
+                            <span>العضلة: صدر سفلي</span>
+                            <span class="sets-reps">3×10</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">ترايسبس</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/4/5/1/9/14519.gif" alt="Triceps Dip">
+                    </div>
+                    <div class="body">
+                        <h3>Triceps Dip</h3>
+                        <p>تمرين أساسي للترايسبس</p>
+                        <div class="exercise-info">
+                            <span>العضلة: ترايسبس</span>
+                            <span class="sets-reps">3×12</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">ترايسبس</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/3/7/1/6/4/37164.gif" alt="Triceps Extension">
+                    </div>
+                    <div class="body">
+                        <h3>Overhead Triceps Extension</h3>
+                        <p>لاستهداف الرأس الطويل للترايسبس</p>
+                        <div class="exercise-info">
+                            <span>العضلة: ترايسبس</span>
+                            <span class="sets-reps">3×12</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====== Day 2: Back + Biceps ====== -->
+            <div id="day2" class="day-content">
+                <div class="day-header">
+                    <h2>🏋️ يوم الظهر والباي</h2>
+                    <p>تمارين لبناء ظهر قوي وعضلات باي ضخمة</p>
+                </div>
+
+                <div class="card">
+                    <div class="badge">ظهر</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/2/0/8/3/2/20832.gif" alt="Barbell Deadlift">
+                    </div>
+                    <div class="body">
+                        <h3>Barbell Deadlift</h3>
+                        <p>ملك التمارين - لبناء القوة الشاملة</p>
+                        <div class="exercise-info">
+                            <span>العضلة: ظهر سفلي</span>
+                            <span class="sets-reps">4×8</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">ظهر</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/5/5/9/3/15593.gif" alt="Lat Pulldown">
+                    </div>
+                    <div class="body">
+                        <h3>Lat Pulldown</h3>
+                        <p>لتوسيع عضلات الظهر العريضة</p>
+                        <div class="exercise-info">
+                            <span>العضلة: لاتس</span>
+                            <span class="sets-reps">4×12</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">ظهر</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/4/4/5/9/14459.gif" alt="Barbell Row">
+                    </div>
+                    <div class="body">
+                        <h3>Barbell Bent Over Row</h3>
+                        <p>لبناء سماكة الظهر</p>
+                        <div class="exercise-info">
+                            <span>العضلة: ظهر أوسط</span>
+                            <span class="sets-reps">4×10</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">باي</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/4/4/8/3/14483.gif" alt="Dumbbell Curl">
+                    </div>
+                    <div class="body">
+                        <h3>Dumbbell Biceps Curl</h3>
+                        <p>التمرين الأساسي لعضلة الباي</p>
+                        <div class="exercise-info">
+                            <span>العضلة: باي</span>
+                            <span class="sets-reps">3×12</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">باي</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/4/8/9/9/4899.gif" alt="Hammer Curl">
+                    </div>
+                    <div class="body">
+                        <h3>Cable Hammer Curl</h3>
+                        <p>لاستهداف عضلة البراكياليس</p>
+                        <div class="exercise-info">
+                            <span>العضلة: باي</span>
+                            <span class="sets-reps">3×12</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">ظهر</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/1/6/4/9/11649.gif" alt="Rear Delt Fly">
+                    </div>
+                    <div class="body">
+                        <h3>Rear Delt Fly</h3>
+                        <p>لاستهداف الجزء الخلفي من الكتف</p>
+                        <div class="exercise-info">
+                            <span>العضلة: دلتا خلفي</span>
+                            <span class="sets-reps">3×15</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====== Day 3: Legs ====== -->
+            <div id="day3" class="day-content">
+                <div class="day-header">
+                    <h2>🦵 يوم الأرجل</h2>
+                    <p>تمارين شاملة لبناء أرجل قوية ومتناسقة</p>
+                </div>
+
+                <div class="card">
+                    <div class="badge">فخذ أمامي</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/5/4/5/5/15455.gif" alt="Squat">
+                    </div>
+                    <div class="body">
+                        <h3>Barbell Squat</h3>
+                        <p>ملك تمارين الأرجل</p>
+                        <div class="exercise-info">
+                            <span>العضلة: فخذ + مؤخرة</span>
+                            <span class="sets-reps">4×10</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">فخذ أمامي</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/5/3/8/8/15388.gif" alt="Lunge">
+                    </div>
+                    <div class="body">
+                        <h3>Walking Lunge</h3>
+                        <p>لتحسين التوازن وبناء الأرجل</p>
+                        <div class="exercise-info">
+                            <span>العضلة: فخذ + مؤخرة</span>
+                            <span class="sets-reps">3×12 لكل رجل</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">فخذ أمامي</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/4/5/0/3/14503.gif" alt="Leg Extension">
+                    </div>
+                    <div class="body">
+                        <h3>Leg Extension</h3>
+                        <p>عزل عضلة الفخذ الأمامية</p>
+                        <div class="exercise-info">
+                            <span>العضلة: كوادريسبس</span>
+                            <span class="sets-reps">3×15</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">فخذ خلفي</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/4/5/0/9/14509.gif" alt="Leg Curl">
+                    </div>
+                    <div class="body">
+                        <h3>Seated Leg Curl</h3>
+                        <p>عزل عضلة الفخذ الخلفية</p>
+                        <div class="exercise-info">
+                            <span>العضلة: هامسترينج</span>
+                            <span class="sets-reps">3×15</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">مؤخرة</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/4/1/5/7/14157.gif" alt="Glute Bridge">
+                    </div>
+                    <div class="body">
+                        <h3>Glute Bridge</h3>
+                        <p>لتقوية عضلات المؤخرة</p>
+                        <div class="exercise-info">
+                            <span>العضلة: مؤخرة</span>
+                            <span class="sets-reps">3×15</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">سمانة</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/3/7/7/5/3/37753.gif" alt="Calf Raise">
+                    </div>
+                    <div class="body">
+                        <h3>Standing Calf Raise</h3>
+                        <p>لبناء عضلات السمانة</p>
+                        <div class="exercise-info">
+                            <span>العضلة: سمانة</span>
+                            <span class="sets-reps">4×20</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====== Day 4: Shoulders + Abs ====== -->
+            <div id="day4" class="day-content">
+                <div class="day-header">
+                    <h2>🎯 يوم الأكتاف والبطن</h2>
+                    <p>تمارين لبناء أكتاف مستديرة وبطن منحوت</p>
+                </div>
+
+                <div class="card">
+                    <div class="badge">أكتاف</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/4/4/9/3/14493.gif" alt="Shoulder Press">
+                    </div>
+                    <div class="body">
+                        <h3>Dumbbell Shoulder Press</h3>
+                        <p>التمرين الأساسي لبناء الأكتاف</p>
+                        <div class="exercise-info">
+                            <span>العضلة: دلتا أمامي</span>
+                            <span class="sets-reps">4×10</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">أكتاف</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/9/1/5/1/19151.gif" alt="Lateral Raise">
+                    </div>
+                    <div class="body">
+                        <h3>Dumbbell Lateral Raise</h3>
+                        <p>لتوسيع الأكتاف من الجانب</p>
+                        <div class="exercise-info">
+                            <span>العضلة: دلتا جانبي</span>
+                            <span class="sets-reps">4×15</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">أكتاف</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/1/6/4/9/11649.gif" alt="Rear Delt Fly">
+                    </div>
+                    <div class="body">
+                        <h3>Rear Delt Fly</h3>
+                        <p>لاستهداف الجزء الخلفي</p>
+                        <div class="exercise-info">
+                            <span>العضلة: دلتا خلفي</span>
+                            <span class="sets-reps">3×15</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">بطن</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/2/7/6/6/3/27663.gif" alt="Bicycle Crunch">
+                    </div>
+                    <div class="body">
+                        <h3>Bicycle Crunch</h3>
+                        <p>تمرين شامل للبطن</p>
+                        <div class="exercise-info">
+                            <span>العضلة: بطن</span>
+                            <span class="sets-reps">3×20</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">بطن</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/7/5/4/1/17541.gif" alt="Russian Twist">
+                    </div>
+                    <div class="body">
+                        <h3>Russian Twist</h3>
+                        <p>لنحت عضلات الجانبين</p>
+                        <div class="exercise-info">
+                            <span>العضلة: أوبليك</span>
+                            <span class="sets-reps">3×20</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">بطن</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/9/0/3/8/9038.gif" alt="Plank">
+                    </div>
+                    <div class="body">
+                        <h3>Front Plank</h3>
+                        <p>لتقوية عضلات الجذع</p>
+                        <div class="exercise-info">
+                            <span>العضلة: كور</span>
+                            <span class="sets-reps">3×45 ثانية</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====== Day 5: Arms ====== -->
+            <div id="day5" class="day-content">
+                <div class="day-header">
+                    <h2>💪 يوم الذراعين</h2>
+                    <p>تمارين مكثفة لبناء ذراعين قويتين</p>
+                </div>
+
+                <div class="card">
+                    <div class="badge">باي</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/4/4/8/3/14483.gif" alt="Biceps Curl">
+                    </div>
+                    <div class="body">
+                        <h3>Dumbbell Biceps Curl</h3>
+                        <p>التمرين الكلاسيكي للباي</p>
+                        <div class="exercise-info">
+                            <span>العضلة: باي</span>
+                            <span class="sets-reps">4×12</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">باي</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/4/8/9/9/4899.gif" alt="Hammer Curl">
+                    </div>
+                    <div class="body">
+                        <h3>Hammer Curl</h3>
+                        <p>لاستهداف البراكياليس</p>
+                        <div class="exercise-info">
+                            <span>العضلة: باي</span>
+                            <span class="sets-reps">3×12</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">ترايسبس</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/3/7/1/6/4/37164.gif" alt="Triceps Extension">
+                    </div>
+                    <div class="body">
+                        <h3>Overhead Triceps Extension</h3>
+                        <p>لاستهداف الرأس الطويل</p>
+                        <div class="exercise-info">
+                            <span>العضلة: ترايسبس</span>
+                            <span class="sets-reps">4×12</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">ترايسبس</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/4/5/1/9/14519.gif" alt="Triceps Dip">
+                    </div>
+                    <div class="body">
+                        <h3>Triceps Dip</h3>
+                        <p>تمرين وزن الجسم للترايسبس</p>
+                        <div class="exercise-info">
+                            <span>العضلة: ترايسبس</span>
+                            <span class="sets-reps">3×15</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">ساعد</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/5/0/2/7/5027.gif" alt="Wrist Curl">
+                    </div>
+                    <div class="body">
+                        <h3>Wrist Curl</h3>
+                        <p>لتقوية عضلات الساعد</p>
+                        <div class="exercise-info">
+                            <span>العضلة: ساعد</span>
+                            <span class="sets-reps">3×20</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">باي + تراي</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/2/6/3/1/2/26312.gif" alt="Push Up Side Plank">
+                    </div>
+                    <div class="body">
+                        <h3>Push Up to Side Plank</h3>
+                        <p>تمرين مركب للذراعين</p>
+                        <div class="exercise-info">
+                            <span>العضلة: ذراع كامل</span>
+                            <span class="sets-reps">3×10</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====== Day 6: Cardio + HIIT ====== -->
+            <div id="day6" class="day-content">
+                <div class="day-header">
+                    <h2>🔥 يوم الكارديو وحرق الدهون</h2>
+                    <p>تمارين عالية الكثافة لحرق الدهون وتحسين اللياقة</p>
+                </div>
+
+                <div class="card">
+                    <div class="badge">كارديو</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/5/9/8/5/15985.gif" alt="Jumping Jack">
+                    </div>
+                    <div class="body">
+                        <h3>Jumping Jack</h3>
+                        <p>لرفع معدل ضربات القلب</p>
+                        <div class="exercise-info">
+                            <span>نوع: إحماء</span>
+                            <span class="sets-reps">60 ثانية</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">HIIT</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/3/7/7/6/0/37760.gif" alt="Burpee">
+                    </div>
+                    <div class="body">
+                        <h3>Burpee</h3>
+                        <p>أقوى تمرين لحرق الدهون</p>
+                        <div class="exercise-info">
+                            <span>نوع: HIIT</span>
+                            <span class="sets-reps">4×15</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">HIIT</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/2/0/8/5/1/20851.gif" alt="Mountain Climber">
+                    </div>
+                    <div class="body">
+                        <h3>Mountain Climber</h3>
+                        <p>كارديو + تقوية البطن</p>
+                        <div class="exercise-info">
+                            <span>نوع: HIIT</span>
+                            <span class="sets-reps">4×30 ثانية</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">كارديو</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/6/8/9/2/16892.gif" alt="High Knees">
+                    </div>
+                    <div class="body">
+                        <h3>High Knees</h3>
+                        <p>جري في المكان بركب عالية</p>
+                        <div class="exercise-info">
+                            <span>نوع: كارديو</span>
+                            <span class="sets-reps">4×45 ثانية</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">HIIT</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/5/4/6/1/5461.gif" alt="Skater">
+                    </div>
+                    <div class="body">
+                        <h3>Skater Jumps</h3>
+                        <p>حركة جانبية سريعة</p>
+                        <div class="exercise-info">
+                            <span>نوع: HIIT</span>
+                            <span class="sets-reps">3×20</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">كارديو</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/6/7/1/3/6713.gif" alt="Plank Jack">
+                    </div>
+                    <div class="body">
+                        <h3>Plank Jack</h3>
+                        <p>بلانك مع حركة القفز</p>
+                        <div class="exercise-info">
+                            <span>نوع: HIIT</span>
+                            <span class="sets-reps">3×30 ثانية</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="note">
+                    💡 <b>نصيحة للحرق:</b> اعمل كل تمرين لمدة 40 ثانية مع راحة 20 ثانية بين التمارين. كرر الدورة 3-4 مرات.
+                </div>
+            </div>
+
+            <!-- ====== Day 7: Rest ====== -->
+            <div id="day7" class="day-content">
+                <div class="day-header">
+                    <h2>😴 يوم الراحة والاستشفاء</h2>
+                    <p>راحة نشطة مع تمارين الإطالة والمرونة</p>
+                </div>
+
+                <div class="card">
+                    <div class="badge">إطالة</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/2/7/8/3/12783.gif" alt="Hamstring Stretch">
+                    </div>
+                    <div class="body">
+                        <h3>Hamstring Stretch</h3>
+                        <p>إطالة الفخذ الخلفي</p>
+                        <div class="exercise-info">
+                            <span>نوع: إطالة</span>
+                            <span class="sets-reps">30 ثانية × 3</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">إطالة</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/2/8/0/9/12809.gif" alt="Quad Stretch">
+                    </div>
+                    <div class="body">
+                        <h3>Quadriceps Stretch</h3>
+                        <p>إطالة الفخذ الأمامي</p>
+                        <div class="exercise-info">
+                            <span>نوع: إطالة</span>
+                            <span class="sets-reps">30 ثانية × 3</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">إطالة</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/2/3/0/4/9/23049.gif" alt="Pigeon Stretch">
+                    </div>
+                    <div class="body">
+                        <h3>Pigeon Stretch</h3>
+                        <p>إطالة عميقة للورك</p>
+                        <div class="exercise-info">
+                            <span>نوع: إطالة</span>
+                            <span class="sets-reps">45 ثانية × 2</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">استرخاء</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/2/6/0/1/2/26012.gif" alt="Child Pose">
+                    </div>
+                    <div class="body">
+                        <h3>Child's Pose</h3>
+                        <p>وضعية استرخاء الطفل</p>
+                        <div class="exercise-info">
+                            <span>نوع: استرخاء</span>
+                            <span class="sets-reps">60 ثانية</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">إطالة</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/2/7/7/2/12772.gif" alt="Hip Flexor">
+                    </div>
+                    <div class="body">
+                        <h3>Hip Flexor Stretch</h3>
+                        <p>إطالة مرنة الورك</p>
+                        <div class="exercise-info">
+                            <span>نوع: إطالة</span>
+                            <span class="sets-reps">30 ثانية × 3</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="badge">إطالة</div>
+                    <div class="card-img-container">
+                        <img src="https://gymvisual.com/img/p/1/2/8/0/6/12806.gif" alt="Butterfly">
+                    </div>
+                    <div class="body">
+                        <h3>Butterfly Stretch</h3>
+                        <p>إطالة الفخذ الداخلي</p>
+                        <div class="exercise-info">
+                            <span>نوع: إطالة</span>
+                            <span class="sets-reps">45 ثانية × 2</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="note">
+                    💡 <b>أهمية الراحة:</b> الراحة ضرورية لنمو العضلات. خلال هذا اليوم، ركز على النوم الجيد (7-8 ساعات) والتغذية السليمة والإكثار من شرب الماء.
+                </div>
+            </div>
+
+            <div class="note" style="margin-top: 20px;">
+                📋 <b>ملخص البرنامج الأسبوعي:</b><br>
+                • السبت: صدر + ترايسبس<br>
+                • الأحد: ظهر + باي<br>
+                • الاثنين: أرجل<br>
+                • الثلاثاء: أكتاف + بطن<br>
+                • الأربعاء: ذراعين<br>
+                • الخميس: كارديو وحرق دهون<br>
+                • الجمعة: راحة وإطالة
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function show(event, id) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            // Deactivate all buttons
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+            // Show target section
+            const target = document.getElementById(id);
+            target.classList.add('active');
+
+            // Activate clicked button
+            event.currentTarget.classList.add('active');
+        }
+
+        function showDay(event, dayId) {
+            // Hide all day contents
+            document.querySelectorAll('.day-content').forEach(d => d.classList.remove('active'));
+            // Deactivate all day buttons
+            document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+
+            // Show target day
+            document.getElementById(dayId).classList.add('active');
+            // Activate clicked button
+            event.currentTarget.classList.add('active');
+        }
+    </script>
+
+</body>
+
+</html>
